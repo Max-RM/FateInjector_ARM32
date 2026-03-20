@@ -7,13 +7,11 @@
 #include "icon/icon.xpm"
 
 wxBEGIN_EVENT_TABLE(cMain, wxFrame)
-EVT_BUTTON(101, OnInjectButton)
-EVT_BUTTON(102, OnHideButton)
-EVT_BUTTON(103, OnSelectButton)
-
-EVT_CHECKBOX(201, OnCustomCheckBox)
-EVT_CHECKBOX(202, OnAutoCheckBox)
-
+    EVT_BUTTON(101, cMain::OnInjectButton)
+    EVT_BUTTON(102, cMain::OnHideButton)
+    EVT_BUTTON(103, cMain::OnSelectButton)
+    EVT_CHECKBOX(201, cMain::OnCustomCheckBox)
+    EVT_CHECKBOX(202, cMain::OnAutoCheckBox)
 wxEND_EVENT_TABLE();
 
 

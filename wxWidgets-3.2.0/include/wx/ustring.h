@@ -14,6 +14,90 @@
 
 #include <string>
 
+// libc++ (используется в llvm-mingw) не предоставляет std::char_traits для unsigned int,
+// а wxUString базируется на std::basic_string<wxChar32> (обычно это unsigned int).
+// Добавим специализацию char_traits<wxChar32>, чтобы это корректно собиралось.
+#if defined(__clang__) && defined(_LIBCPP_VERSION)
+namespace std {
+    template<>
+    struct char_traits<wxChar32>
+    {
+        using char_type = wxChar32;
+        using int_type = unsigned int;
+        using off_type = std::streamoff;
+        using pos_type = std::u32streampos;
+        using state_type = std::mbstate_t;
+
+        static void assign(char_type &c1, const char_type &c2) noexcept { c1 = c2; }
+        static bool eq(char_type c1, char_type c2) noexcept { return c1 == c2; }
+        static bool lt(char_type c1, char_type c2) noexcept { return c1 < c2; }
+
+        static int compare(const char_type* s1, const char_type* s2, size_t n) noexcept
+        {
+            for (size_t i = 0; i < n; ++i)
+            {
+                if (lt(s1[i], s2[i])) return -1;
+                if (lt(s2[i], s1[i])) return 1;
+            }
+            return 0;
+        }
+
+        static size_t length(const char_type* s) noexcept
+        {
+            size_t i = 0;
+            while (s[i] != 0)
+                ++i;
+            return i;
+        }
+
+        static const char_type* find(const char_type* s, size_t n, const char_type& a) noexcept
+        {
+            for (size_t i = 0; i < n; ++i)
+            {
+                if (eq(s[i], a))
+                    return s + i;
+            }
+            return nullptr;
+        }
+
+        static char_type* move(char_type* s1, const char_type* s2, size_t n) noexcept
+        {
+            if (s1 < s2)
+            {
+                for (size_t i = 0; i < n; ++i)
+                    s1[i] = s2[i];
+            }
+            else if (s1 > s2)
+            {
+                for (size_t i = n; i-- > 0; )
+                    s1[i] = s2[i];
+            }
+            return s1;
+        }
+
+        static char_type* copy(char_type* s1, const char_type* s2, size_t n) noexcept
+        {
+            for (size_t i = 0; i < n; ++i)
+                s1[i] = s2[i];
+            return s1;
+        }
+
+        static char_type* assign(char_type* s, size_t n, char_type a) noexcept
+        {
+            for (size_t i = 0; i < n; ++i)
+                s[i] = a;
+            return s;
+        }
+
+        static int_type eof() noexcept { return static_cast<int_type>(-1); }
+        static int_type to_int_type(char_type c) noexcept { return static_cast<int_type>(c); }
+        static char_type to_char_type(int_type c) noexcept { return static_cast<char_type>(c); }
+        static bool eq_int_type(int_type c1, int_type c2) noexcept { return c1 == c2; }
+        static int_type not_eof(int_type c) noexcept { return c == eof() ? 0 : c; }
+    };
+} // namespace std
+#endif
+
 #if SIZEOF_WCHAR_T == 2
 typedef wxWCharBuffer wxU16CharBuffer;
 typedef wxScopedWCharBuffer wxScopedU16CharBuffer;
