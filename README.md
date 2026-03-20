@@ -1,5 +1,5 @@
 # Description
-This is a third-party port on ARM for injecting DLL for Minecraft Bedrock Edition ARM32 UWP on Windows 10 ARM32 15035 and Windows 10/11 ARM64.
+This is a third-party port on ARM for injecting DLL for Minecraft Bedrock Edition ARM32 UWP on Windows 10 ARM32 15035 and Windows 10/11 ARM64, based on: https://github.com/fligger/FateInjector.
 Although there have never been any cheat DLLs for MCBE UWP ARM32, nevertheless this is the first step towards this.
 <img width="1280" height="777" alt="image" src="https://github.com/user-attachments/assets/c9c25450-f038-4bea-acda-e43f7c1d5e07" />
 
